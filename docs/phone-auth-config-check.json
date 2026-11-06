@@ -1,0 +1,116 @@
+{
+  "identityToolkit": {
+    "state": "ENABLED"
+  },
+  "secureToken": {
+    "state": "ENABLED"
+  },
+  "authConfig": {
+    "phoneEnabled": true,
+    "designatedTestPhonePresent": true,
+    "expectedDomainAuthorized": true,
+    "smsRegionConfig": {
+      "allowlistOnly": {}
+    }
+  },
+  "apiKey": {
+    "keyBelongsToExpectedProject": true,
+    "restrictions": {
+      "androidKeyRestrictions": {},
+      "apiTargets": [
+        {
+          "service": "firebasedatabase.googleapis.com"
+        },
+        {
+          "service": "firebasehosting.googleapis.com"
+        },
+        {
+          "service": "firebaserules.googleapis.com"
+        },
+        {
+          "service": "sqladmin.googleapis.com"
+        },
+        {
+          "service": "cloudconfig.googleapis.com"
+        },
+        {
+          "service": "datastore.googleapis.com"
+        },
+        {
+          "service": "fcmregistrations.googleapis.com"
+        },
+        {
+          "service": "firebase.googleapis.com"
+        },
+        {
+          "service": "firebaseappcheck.googleapis.com"
+        },
+        {
+          "service": "firebaseappdistribution.googleapis.com"
+        },
+        {
+          "service": "firebaseapphosting.googleapis.com"
+        },
+        {
+          "service": "firebaseapptesters.googleapis.com"
+        },
+        {
+          "service": "firebasedataconnect.googleapis.com"
+        },
+        {
+          "service": "firebaseinappmessaging.googleapis.com"
+        },
+        {
+          "service": "firebaseinstallations.googleapis.com"
+        },
+        {
+          "service": "firebaseml.googleapis.com"
+        },
+        {
+          "service": "firebaseremoteconfig.googleapis.com"
+        },
+        {
+          "service": "firebaseremoteconfigrealtime.googleapis.com"
+        },
+        {
+          "service": "firebasestorage.googleapis.com"
+        },
+        {
+          "service": "firebasevertexai.googleapis.com"
+        },
+        {
+          "service": "firestore.googleapis.com"
+        },
+        {
+          "service": "identitytoolkit.googleapis.com"
+        },
+        {
+          "service": "logging.googleapis.com"
+        },
+        {
+          "service": "mlkit.googleapis.com"
+        },
+        {
+          "service": "play.googleapis.com"
+        },
+        {
+          "service": "securetoken.googleapis.com"
+        },
+        {
+          "service": "fpnv.googleapis.com"
+        }
+      ]
+    },
+    "androidAllowedApplicationCount": 0
+  },
+  "android-apk-identity": {
+    "httpStatus": 200,
+    "projectId": "533480028801",
+    "authorizedDomainPresent": true
+  },
+  "recaptcha-browser": {
+    "httpStatus": 200,
+    "projectId": "533480028801",
+    "authorizedDomainPresent": true
+  }
+}

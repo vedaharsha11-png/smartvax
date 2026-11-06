@@ -1,0 +1,18 @@
+{
+  "name": "projects/smartvax-e3956/rulesets/739eea99-da3d-43f2-9459-a2e99f290a71",
+  "source": {
+    "files": [
+      {
+        "content": "rules_version = '2';\n\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /{document=**} {\n      allow read, write: if false;\n    }\n  }\n}",
+        "name": "firestore.rules"
+      }
+    ]
+  },
+  "createTime": "2026-10-12T08:58:28.317410Z",
+  "metadata": {
+    "services": [
+      "cloud.firestore"
+    ]
+  },
+  "attachmentPoint": "firestore.googleapis.com/projects/533480028801/databases/smartvax"
+}

@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owned(uid) { return request.auth != null && request.auth.uid == uid; }
+    function base(uid, id) {
+      return request.resource.data.ownerUid == uid && request.resource.data.schemaVersion == 1
+        && (id == 'main' || request.resource.data.id == id)
+        && request.resource.data.updatedAt == request.time;
+    }
+    function childExists(uid, childId) {
+      return childId is string && existsAfter(/databases/$(database)/documents/users/$(uid)/children/$(childId)) && getAfter(/databases/$(database)/documents/users/$(uid)/children/$(childId)).data.get('archived', false) == false;
+    }
+    function optionalDoctor(uid, id) {
+      return id == null || (id is string && existsAfter(/databases/$(database)/documents/users/$(uid)/doctors/$(id)));
+    }
+    function optionalHospital(uid, id) {
+      return id == null || (id is string && existsAfter(/databases/$(database)/documents/users/$(uid)/hospitals/$(id)));
+    }
+    match /users/{uid} {
+      allow read: if owned(uid);
+      allow create: if owned(uid) && request.resource.data.keys().hasOnly(['ownerUid','phoneNumber','schemaVersion','createdAt','datasetDate'])
+        && request.resource.data.ownerUid == uid && request.resource.data.schemaVersion == 1
+        && request.resource.data.phoneNumber == request.auth.token.phone_number
+        && request.resource.data.createdAt == request.time && request.resource.data.datasetDate is timestamp;
+      allow update, delete: if false;
+      match /metadata/seed {
+        allow read: if owned(uid);
+        allow create: if owned(uid) && request.auth.token.phone_number == '+917893427676'
+          && request.resource.data.keys().hasOnly(['seedVersion','seedStatus','seededUid','ownerUid','datasetIdentifier','schemaVersion','completedAt','counts','skipped'])
+          && request.resource.data.seedVersion == 1 && request.resource.data.schemaVersion == 1
+          && request.resource.data.seedStatus == 'complete' && request.resource.data.seededUid == uid
+          && request.resource.data.ownerUid == uid && request.resource.data.datasetIdentifier == 'smartvax-sharma-v1'
+          && request.resource.data.completedAt == request.time && request.resource.data.counts is map
+          && request.resource.data.skipped == 0;
+        allow update, delete: if false;
+      }
+      match /guardians/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'name', 'relation', 'mobile', 'avatar', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'name', 'relation', 'mobile', 'avatar']) && (d.id is string && d.id.size() <= 1000) && (d.name is string && d.name.size() <= 1000) && (d.relation is string && d.relation.size() <= 1000) && (d.mobile is string && d.mobile.size() <= 1000) && (d.avatar is string && d.avatar.size() <= 1000); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /children/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'name', 'dob', 'gender', 'bloodGroup', 'cardId', 'avatar', 'motherId', 'fatherId', 'address', 'emergencyContact', 'notes', 'archived', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'name', 'dob', 'gender', 'bloodGroup', 'cardId', 'avatar', 'motherId', 'fatherId', 'address', 'emergencyContact', 'notes']) && (d.id is string && d.id.size() <= 1000) && (d.name is string && d.name.size() <= 1000) && d.dob is timestamp && d.gender in ['male', 'female', 'other'] && (d.bloodGroup is string && d.bloodGroup.size() <= 1000) && (d.cardId is string && d.cardId.size() <= 1000) && (d.avatar is string && d.avatar.size() <= 1000) && (d.motherId is string && d.motherId.size() <= 1000) && (d.fatherId is string && d.fatherId.size() <= 1000) && (d.address is string && d.address.size() <= 1000) && (d.emergencyContact is string && d.emergencyContact.size() <= 1000) && (d.notes is string && d.notes.size() <= 8000) && d.get('archived',false) is bool && d.name.size() > 0 && d.dob <= request.time && existsAfter(/databases/$(database)/documents/users/$(uid)/guardians/$(d.motherId)) && existsAfter(/databases/$(database)/documents/users/$(uid)/guardians/$(d.fatherId)); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if false;
+      }
+      match /vaccinationRecords/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'childId', 'vaccineId', 'dose', 'status', 'administeredAt', 'plannedFor', 'doctorId', 'hospitalId', 'batchNumber', 'notes', 'seeded', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'childId', 'vaccineId', 'dose', 'status', 'administeredAt', 'plannedFor', 'doctorId', 'hospitalId', 'batchNumber', 'notes', 'seeded']) && (d.id is string && d.id.size() <= 1000) && (d.childId is string && d.childId.size() <= 1000) && (d.vaccineId is string && d.vaccineId.size() <= 1000) && (d.dose is string && d.dose.size() <= 1000) && d.status in ['completed', 'pending', 'planned'] && (d.administeredAt == null || d.administeredAt is timestamp) && (d.plannedFor == null || d.plannedFor is timestamp) && (d.doctorId == null || (d.doctorId is string && d.doctorId.size() <= 1000)) && (d.hospitalId == null || (d.hospitalId is string && d.hospitalId.size() <= 1000)) && (d.batchNumber is string && d.batchNumber.size() <= 1000) && (d.notes is string && d.notes.size() <= 8000) && d.seeded is bool && childExists(uid, d.childId) && optionalDoctor(uid,d.doctorId) && optionalHospital(uid,d.hospitalId) && d.dose.size() > 0 && (d.status == 'completed' ? (d.administeredAt is timestamp && d.administeredAt <= request.time && d.administeredAt >= getAfter(/databases/$(database)/documents/users/$(uid)/children/$(d.childId)).data.dob) : d.administeredAt == null); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /doctors/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'name', 'specialty', 'qualification', 'experience', 'hospitalId', 'area', 'avatar', 'bio', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'name', 'specialty', 'qualification', 'experience', 'hospitalId', 'area', 'avatar', 'bio']) && (d.id is string && d.id.size() <= 1000) && (d.name is string && d.name.size() <= 1000) && (d.specialty is string && d.specialty.size() <= 1000) && (d.qualification is string && d.qualification.size() <= 1000) && d.experience is int && d.experience >= 0 && d.experience <= 100 && (d.hospitalId is string && d.hospitalId.size() <= 1000) && (d.area is string && d.area.size() <= 1000) && (d.avatar is string && d.avatar.size() <= 1000) && (d.bio is string && d.bio.size() <= 8000); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /hospitals/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'name', 'area', 'city', 'state', 'address', 'phone', 'hours', 'services', 'doctorIds', 'illustration', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'name', 'area', 'city', 'state', 'address', 'phone', 'hours', 'services', 'doctorIds', 'illustration']) && (d.id is string && d.id.size() <= 1000) && (d.name is string && d.name.size() <= 1000) && (d.area is string && d.area.size() <= 1000) && (d.city is string && d.city.size() <= 1000) && (d.state is string && d.state.size() <= 1000) && (d.address is string && d.address.size() <= 1000) && (d.phone is string && d.phone.size() <= 1000) && (d.hours is string && d.hours.size() <= 1000) && d.services is list && d.services.size() <= 100 && d.doctorIds is list && d.doctorIds.size() <= 100 && (d.illustration is string && d.illustration.size() <= 1000); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /appointments/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'childId', 'doctorId', 'hospitalId', 'reason', 'date', 'time', 'status', 'notes', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'childId', 'doctorId', 'hospitalId', 'reason', 'date', 'time', 'status', 'notes']) && (d.id is string && d.id.size() <= 1000) && (d.childId is string && d.childId.size() <= 1000) && (d.doctorId is string && d.doctorId.size() <= 1000) && (d.hospitalId is string && d.hospitalId.size() <= 1000) && (d.reason is string && d.reason.size() <= 1000) && d.date is timestamp && d.time is map && d.time.keys().hasOnly(['hour','minute']) && d.time.hour is int && d.time.hour >= 0 && d.time.hour < 24 && d.time.minute is int && d.time.minute >= 0 && d.time.minute < 60 && d.status in ['requested', 'scheduled', 'completed', 'cancelled'] && (d.notes is string && d.notes.size() <= 8000) && childExists(uid,d.childId) && optionalDoctor(uid,d.doctorId) && optionalHospital(uid,d.hospitalId) && getAfter(/databases/$(database)/documents/users/$(uid)/doctors/$(d.doctorId)).data.hospitalId == d.hospitalId; }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /reminders/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'childId', 'recordId', 'daysBefore', 'enabled', 'targetDate', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'childId', 'recordId', 'daysBefore', 'enabled']) && (d.id is string && d.id.size() <= 1000) && (d.childId is string && d.childId.size() <= 1000) && (d.recordId is string && d.recordId.size() <= 1000) && d.daysBefore is int && d.daysBefore >= 0 && d.daysBefore <= 100 && d.enabled is bool && childExists(uid,d.childId) && existsAfter(/databases/$(database)/documents/users/$(uid)/vaccinationRecords/$(d.recordId)) && getAfter(/databases/$(database)/documents/users/$(uid)/vaccinationRecords/$(d.recordId)).data.childId == d.childId && d.daysBefore in [0,1,3,7] && (d.targetDate == null || d.targetDate is timestamp); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /notifications/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'title', 'message', 'createdAt', 'type', 'read', 'childId', 'referenceId', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'title', 'message', 'createdAt', 'type', 'read', 'childId', 'referenceId']) && (d.id is string && d.id.size() <= 1000) && (d.title is string && d.title.size() <= 1000) && (d.message is string && d.message.size() <= 8000) && d.createdAt is timestamp && d.type in ['vaccine', 'appointment', 'record', 'tip', 'general'] && d.read is bool && (d.childId == null || (d.childId is string && d.childId.size() <= 1000)) && (d.referenceId == null || (d.referenceId is string && d.referenceId.size() <= 1000)); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /healthTips/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['id', 'title', 'body', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt']) && d.keys().hasAll(['id', 'title', 'body']) && (d.id is string && d.id.size() <= 1000) && (d.title is string && d.title.size() <= 1000) && (d.body is string && d.body.size() <= 8000); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+      match /settings/{id} {
+        function valid() { let d = request.resource.data; return d.keys().hasOnly(['remindersEnabled', 'reminderDays', 'ownerUid', 'schemaVersion', 'updatedAt', 'createdAt', 'selectedChildId', 'activeGuardianId', 'visitChecklists']) && d.keys().hasAll(['remindersEnabled', 'reminderDays']) && d.remindersEnabled is bool && d.reminderDays is list && d.reminderDays.size() <= 100 && id == 'main' && d.selectedChildId is string && (d.selectedChildId == '' || childExists(uid,d.selectedChildId)) && d.activeGuardianId is string && existsAfter(/databases/$(database)/documents/users/$(uid)/guardians/$(d.activeGuardianId)) && d.visitChecklists is map && d.visitChecklists.size() <= 100 && d.reminderDays.hasOnly([0,1,3,7]); }
+        allow read: if owned(uid);
+        allow create, update: if owned(uid) && base(uid,id) && valid();
+        allow delete: if owned(uid);
+      }
+    }
+    // No global private data or collection group access is granted.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

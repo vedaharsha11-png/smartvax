@@ -1,0 +1,4 @@
+{
+  "firestore": [{"database": "smartvax", "rules": "firestore.smartvax.rules", "indexes": "firestore.smartvax.indexes.json"}],
+  "emulators": {"firestore": {"port": 8080}, "ui": {"enabled": false}, "singleProjectMode": true}
+}

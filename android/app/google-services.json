@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "533480028801",
+    "project_id": "smartvax-e3956",
+    "storage_bucket": "smartvax-e3956.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:533480028801:android:3c7d2b6fe6320e1aa0ab80",
+        "android_client_info": {
+          "package_name": "com.veda.smartvax"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAis0H42DTg5aLY1m5dHdnfb5_VivQrbwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

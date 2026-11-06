@@ -1,0 +1,9 @@
+{
+  "projectId": true,
+  "registeredAppId": true,
+  "generatedAndroidProjectMatches": true,
+  "generatedAndroidAppIdMatches": true,
+  "generatedAndroidApiKeyMatches": true,
+  "firebaseOptionsDartExists": false,
+  "namedDatabasePreserved": true
+}

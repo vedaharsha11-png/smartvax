@@ -1,0 +1,31 @@
+{
+  "buildMode": "release",
+  "signing": "debug-key-signed-private-testing-only",
+  "productionReady": false,
+  "applicationId": "com.veda.smartvax",
+  "displayName": "SmartVax",
+  "versionName": "1.1.0",
+  "versionCode": 2,
+  "firebaseProjectId": "smartvax-e3956",
+  "firestoreDatabaseId": "smartvax",
+  "apkPath": "/Users/puppalavedaharsha/Desktop/smart child vacination/build/app/outputs/flutter-apk/app-release.apk",
+  "sizeBytes": 60662077,
+  "fileSha256": "60a08241bf82d54008143c8dc774944770497e513e2b6d1debe115f1b7366bc6",
+  "certificateSha1": "6B:FF:04:F4:A0:BA:E5:8E:0E:4D:92:9D:38:29:8D:76:71:AC:49:87",
+  "certificateSha256": "40:F3:DD:EB:5B:EF:EA:A8:01:14:BC:42:C7:E6:15:95:3C:A7:E8:6C:9D:B3:CC:80:BD:5E:CC:9C:E6:DF:FA:25",
+  "certificateRegisteredInFirebase": true,
+  "livePhoneSignInVerified": false,
+  "checks": {
+    "pubGet": "passed",
+    "analyze": "no issues",
+    "flutterTests": 45,
+    "apkSignature": "verified-v2",
+    "aot": true,
+    "codeShrinking": true,
+    "resourceShrinking": true,
+    "debuggable": false
+  },
+  "firebaseServicesDeployed": false,
+  "productionDataModified": false,
+  "published": false
+}

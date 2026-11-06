@@ -1,0 +1,39 @@
+{
+  "artifacts": [
+    {
+      "mode": "release",
+      "apkPath": "/Users/puppalavedaharsha/Desktop/smart child vacination/build/app/outputs/flutter-apk/app-release.apk",
+      "sizeBytes": 60760381,
+      "fileSha256": "0fda3e89dd41cec0904f3f0d162e08e016fde59be1bf36378da8cc4f3589e758",
+      "certificateSha1": "6bff04f4a0bae58e0e4d929d38298d7671ac4987",
+      "certificateSha256": "40f3ddeb5befeaa80114bc42c7e615953ca7e86c9db3cc80bd5ecc9ce6dffa25",
+      "signatureVerified": true,
+      "certificateRegisteredInFirebase": true,
+      "recaptchaActivityPresent": true,
+      "applicationId": "com.veda.smartvax",
+      "version": "1.1.0+2",
+      "productionReady": false
+    },
+    {
+      "mode": "debug",
+      "apkPath": "/Users/puppalavedaharsha/Desktop/smart child vacination/build/app/outputs/flutter-apk/app-debug.apk",
+      "sizeBytes": 174788815,
+      "fileSha256": "2538a51d40d2aeb3cc4f82c8464110094c08385411a7844b49cb253eec6243f1",
+      "certificateSha1": "6bff04f4a0bae58e0e4d929d38298d7671ac4987",
+      "certificateSha256": "40f3ddeb5befeaa80114bc42c7e615953ca7e86c9db3cc80bd5ecc9ce6dffa25",
+      "signatureVerified": true,
+      "certificateRegisteredInFirebase": true,
+      "recaptchaActivityPresent": true,
+      "applicationId": "com.veda.smartvax",
+      "version": "1.1.0+2",
+      "productionReady": false
+    }
+  ],
+  "flutterAnalyze": "no issues",
+  "flutterTestsPassed": 52,
+  "exactDeviceExceptionCode": null,
+  "deviceRootCauseConfirmed": false,
+  "deviceOtpVerified": false,
+  "liveSampleImportVerified": false,
+  "cloudConfigurationModified": false
+}
